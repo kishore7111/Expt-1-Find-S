@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e8f0fe;  /* Updated background color */
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;  /* Slightly updated for better contrast */
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);  /* Added shadow for better visual separation */
+            border-radius: 12px;  /* Slightly rounded the border */
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;  /* Updated label color */
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #bbb;
+            border-radius: 6px;  /* Slightly increased the radius */
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            border-color: #007bff;  /* Focus effect */
+        }
+        .form-group button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #28a745;  /* Updated to a green color */
+            color: #fff;
+            border: none;
+            border-radius: 6px;  /* Slightly increased the radius */
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group button:hover {
+            background-color: #218838;  /* Darker green for hover */
+            transform: scale(1.03);  /* Slightly larger on hover */
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .result h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #007bff;  /* Updated header color */
+        }
+        .result p {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #555;  /* Updated text color for better readability */
+        }
+        .result p strong {
+            font-weight: bold;
+            color: #000;  /* Made strong elements more prominent */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Recommendation System</h1>
+        <form id="recommendation-form">
+            <div class="form-group">
+                <label for="customer_id">Enter Customer ID:</label>
+                <input type="text" id="customer_id" name="customer_id" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Get Recommendations</button>
+            </div>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+    <script>
+        document.getElementById('recommendation-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const customerId = document.getElementById('customer_id').value;
+
+            fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ customer_id: customerId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.error) {
+                    resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h2>Recommendations for Customer ${customerId}</h2>
+                        <p><strong>Purchased Products:</strong> ${data.purchased.join(', ')}</p>
+                        <p><strong>Recommended Products:</strong> ${data.recommendations.join(', ')}</p>
+                    `;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
